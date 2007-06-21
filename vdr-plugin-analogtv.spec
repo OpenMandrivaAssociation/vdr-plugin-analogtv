@@ -2,7 +2,7 @@
 %define plugin	analogtv
 %define name	vdr-plugin-%plugin
 %define version	1.0.00
-%define rel	10
+%define rel	11
 
 Summary:	VDR plugin: Watch analogue TV
 Name:		%name
