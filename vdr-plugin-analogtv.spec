@@ -14,7 +14,6 @@ URL:		http://www.ko0l.de/download/vdr/analogtv/
 Source:		http://www.ko0l.de/download/vdr/analogtv/download/vdr-%plugin-%version.tar.bz2
 Source2:	channels.conf.analogue.generic
 Patch4:		analogtv-displaystatus-loglevel3.patch
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 BuildRequires:	libdvb-devel
 BuildRequires:	libalsa-devel
