@@ -15,7 +15,7 @@ Source:		http://www.ko0l.de/download/vdr/analogtv/download/vdr-%plugin-%version.
 Source2:	channels.conf.analogue.generic
 Patch4:		analogtv-displaystatus-loglevel3.patch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
-BuildRequires:	vdr-devel >= 1.4.1-6
+BuildRequires:	vdr-devel >= 1.4.7-9
 BuildRequires:	libdvb-devel
 BuildRequires:	libalsa-devel
 BuildRequires:	libjpeg-devel
@@ -55,7 +55,7 @@ perl -pi -e 's/32001/A0/' README*
 chmod 0644 examples/*.conf.*
 
 %build
-%define vdr_add_optflags -fno-PIC
+VDR_PLUGIN_FLAGS="%vdr_plugin_flags -fno-PIC"
 %vdr_plugin_build
 
 %install
