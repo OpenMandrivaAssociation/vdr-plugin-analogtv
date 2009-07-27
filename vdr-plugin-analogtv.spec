@@ -16,12 +16,11 @@ Source2:	channels.conf.analogue.generic
 Patch1:		analogtv-1.0.00-i18n-1.6.patch
 Patch4:		analogtv-displaystatus-loglevel3.patch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
-BuildRequires:	vdr-devel >= 1.6.0
+BuildRequires:	vdr-devel >= 1.6.0-7
 BuildRequires:	libdvb-devel
 BuildRequires:	libalsa-devel
 BuildRequires:	libjpeg-devel
 Requires:	vdr-abi = %vdr_abi
-ExclusiveArch:	%ix86
 
 %description
 With the help of this plugin you could connect any analogue equipment
@@ -47,18 +46,31 @@ cp -a %SOURCE2 .
 
 rm examples/hoerzu2vdr/channelid.Radio.conf
 
+# obsolete commandline
 perl -pi -e 's/-hq//' player-analogtv.c
 sed -i '/sprintf(cmd, "ffmpeg/s,%%s:%%d,%%s,' player-analogtv.c
 sed -i '/-ad/s/s.mixer_line,//' player-analogtv.c
+
+sed -i 's,-march=i486 -mcpu=i686,,' Makefile
+sed -i 's,CCFLAGS,CXXFLAGS,' Makefile
+
+%ifnarch %ix86
+sed -i 's,^HAVE_FAST_MEMCPY,#HAVE_FAST_MEMCPY,' Makefile
+sed -i 's,cpuinfo\.o,,' Makefile
+sed -i 's,cpu_accel\.o,,' Makefile
+%endif
 
 # README confuses too much with the old CA id
 perl -pi -e 's/32001/A0/' README*
 
 chmod 0644 examples/*.conf.*
+
 %vdr_plugin_prep
 
 %build
-VDR_PLUGIN_FLAGS="%vdr_plugin_flags -fno-PIC"
+%ifarch %ix86
+VDR_PLUGIN_EXTRA_FLAGS="-fno-PIC"
+%endif
 %vdr_plugin_build
 
 %install
