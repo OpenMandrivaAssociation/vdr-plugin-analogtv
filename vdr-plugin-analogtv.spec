@@ -14,7 +14,14 @@ URL:		http://www.ko0l.de/download/vdr/analogtv/
 Source:		http://www.ko0l.de/download/vdr/analogtv/download/vdr-%plugin-%version.tar.bz2
 Source2:	channels.conf.analogue.generic
 Patch1:		analogtv-1.0.00-i18n-1.6.patch
+Patch2:		analogtv-update-ffmpeg-params.patch
+Patch3:		analogtv-fix-bitrate-menudescription.patch
 Patch4:		analogtv-displaystatus-loglevel3.patch
+Patch5:		analogtv-fix-non-x86.patch
+Patch6:		analogtv-threadsafety.patch
+Patch7:		analogtv-default-syslog.patch
+# from e-tobi:
+Patch10:	analogtv-sane-c++.patch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0-7
 BuildRequires:	libdvb-devel
@@ -39,26 +46,14 @@ supported software MPEG encoder (mp1e is recommended).
 
 %prep
 %setup -q -n %plugin-%version
-%patch1 -p1
-%patch4 -p1 -b .status
+%apply_patches
 
 cp -a %SOURCE2 .
 
 rm examples/hoerzu2vdr/channelid.Radio.conf
 
-# obsolete commandline
-perl -pi -e 's/-hq//' player-analogtv.c
-sed -i '/sprintf(cmd, "ffmpeg/s,%%s:%%d,%%s,' player-analogtv.c
-sed -i '/-ad/s/s.mixer_line,//' player-analogtv.c
-
-sed -i 's,-march=i486 -mcpu=i686,,' Makefile
-sed -i 's,CCFLAGS,CXXFLAGS,' Makefile
-
-%ifnarch %ix86
-sed -i 's,^HAVE_FAST_MEMCPY,#HAVE_FAST_MEMCPY,' Makefile
-sed -i 's,cpuinfo\.o,,' Makefile
-sed -i 's,cpu_accel\.o,,' Makefile
-%endif
+# No need for own cSchedules anymore, this is already handled by VDR.
+sed -i 's,^NEED_OWN_SIP,#&,' Makefile
 
 # README confuses too much with the old CA id
 perl -pi -e 's/32001/A0/' README*
@@ -69,6 +64,7 @@ chmod 0644 examples/*.conf.*
 
 %build
 %ifarch %ix86
+# fails build otherwise
 VDR_PLUGIN_EXTRA_FLAGS="-fno-PIC"
 %endif
 %vdr_plugin_build
