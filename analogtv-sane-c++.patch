@@ -1,0 +1,53 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 12_sane-c++.dpatch by Tobias Grimm <tg@e-tobi.net>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad vdr-plugin-analogtv-1.0.00~/player-analogtv.c vdr-plugin-analogtv-1.0.00/player-analogtv.c
+--- vdr-plugin-analogtv-1.0.00~/player-analogtv.c	2006-05-31 18:35:21.000000000 +0200
++++ vdr-plugin-analogtv-1.0.00/player-analogtv.c	2006-12-20 22:14:12.000000000 +0100
+@@ -12,6 +12,7 @@
+  */
+ 
+ #include <stdio.h>
++#include <stdlib.h>
+ #include <stdarg.h>
+ #include <string.h>
+ #include <time.h>
+@@ -26,6 +27,7 @@
+ #include <sys/mman.h>
+ #include <sys/sysinfo.h>
+ #include <sys/soundcard.h>
++#include <sys/wait.h>
+ 
+ #include <transform.h>
+ #undef MIN
+@@ -282,7 +284,7 @@
+       }
+ 
+       if (i < MAXSOURCES)
+-        strcpy(sources[i], input.name);
++        strcpy(sources[i], (char*) input.name);
+ 
+       d(1, "Detected Input#%d: %s", i, input.name);
+     }
+@@ -866,7 +868,7 @@
+ {
+   register int  f, r = 0, rv, rmax = 0, cc = 0, i;
+   register int  dropped = 0, dropwarned = 1, skipped = 0;
+-  auto     UC   buffer[BUFFSIZE], sx[128], cmd[256];
++  auto     char buffer[BUFFSIZE], sx[128], cmd[256];
+   auto	   FILE *fi;
+ 
+   for (i = 0; i < NUM_BUFS; i++)
+@@ -936,7 +938,7 @@
+       spes += r;
+ 
+       if (r > 0)
+-        kpes_to_ts(&p2t, buffer, r); // PES -> TS
++        kpes_to_ts(&p2t, (uint8_t*) buffer, r); // PES -> TS
+     }
+   }
+ 

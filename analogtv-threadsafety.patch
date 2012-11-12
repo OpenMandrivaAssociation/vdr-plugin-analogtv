@@ -1,0 +1,60 @@
+Index: analogtv-1.0.00/analogtv.c
+===================================================================
+--- analogtv-1.0.00/analogtv.c
++++ analogtv-1.0.00/analogtv.c	2010-06-27 04:55:44.196416447 +0300
+@@ -398,7 +398,8 @@
+     now = time((time_t)NULL);
+ 
+     if (now > (epg_update + (s.epg_autoupdate * 60 * 60))) {
+-      d(0, "EPG autoupdate %s", ctime(&now));
++      char now_buf[26];
++      d(0, "EPG autoupdate %s", ctime_r(&now, now_buf));
+ 
+       AnalogtvEPGhandler = new cAnalogtvEPGhandler;
+ 
+Index: analogtv-1.0.00/player-analogtv.c
+===================================================================
+--- analogtv-1.0.00/player-analogtv.c
++++ analogtv-1.0.00/player-analogtv.c	2010-06-27 04:56:40.956416001 +0300
+@@ -61,6 +61,7 @@
+   auto char    t[BUFSIZ];
+   auto va_list ap;
+   auto time_t  now;
++  struct tm    tm_local;
+ 
+ 
+   va_start(ap, fmt);
+@@ -70,11 +71,11 @@
+       case STDOUT : time(&now);
+ #if 0                    
+       	   	    vsnprintf(t + 19, sizeof t - 19, fmt, ap);
+-                    strftime(t, sizeof t, "analogTV: %H:%M:%S", localtime(&now));
++                    strftime(t, sizeof t, "analogTV: %H:%M:%S", localtime_r(&now, &tm_local));
+                     t[18] = ' ';
+ #else
+       	   	    vsnprintf(t + 9, sizeof t - 9, fmt, ap);
+-                    strftime(t, sizeof t, "%H:%M:%S", localtime(&now));
++                    strftime(t, sizeof t, "%H:%M:%S", localtime_r(&now, &tm_local));
+                     t[8] = ' ';
+ #endif
+                     
+@@ -97,7 +98,7 @@
+                     if (lf != (FILE *)NULL) {
+                       vsnprintf(t + 20, sizeof t - 20, fmt, ap);
+                       time(&now);
+-                      strftime(t, sizeof t, "%d.%m.%Y %H:%M:%S", localtime(&now));
++                      strftime(t, sizeof t, "%d.%m.%Y %H:%M:%S", localtime_r(&now, &tm_local));
+                       t[19] = ' ';
+                       fprintf(lf, "%s\n", t);
+                     }
+@@ -342,8 +343,9 @@
+   if (s.report) {
+ 
+     if ((fo = fopen("/tmp/analogTV.rep", "a")) != (FILE *)NULL) {
++      char now_buf[26];
+       now = time((time_t)NULL);
+-      fprintf(fo, "\nvdr-analogTV report %s\n", ctime(&now));
++      fprintf(fo, "\nvdr-analogTV report %s\n", ctime_r(&now, now_buf));
+ 
+       fprintf(fo, "VDR version:%s", vdrver);
+ 

@@ -1,0 +1,55 @@
+Index: analogtv-1.0.00-ff/player-analogtv.c
+===================================================================
+--- analogtv-1.0.00-ff/player-analogtv.c
++++ analogtv-1.0.00-ff/player-analogtv.c	2010-06-27 04:19:36.815416357 +0300
+@@ -515,13 +515,14 @@
+   register int    a, b, f, cc;
+   auto     float  ar;
+   auto     char   cmd[512], s0[64], s1[64], s3[64];
++  int ar_int;
+ 
+   switch (s.sample_rate) {
+-    case 0 : ar = 22.05; break;
+-    case 1 : ar = 32; break;
+-    case 2 : ar = 44.1; break;
+-    case 3 : ar = 48; break;
+-    case 4 : ar = 96; break;
++    case 0 : ar = 22.05; ar_int = 22050; break;
++    case 1 : ar = 32;    ar_int = 32000; break;
++    case 2 : ar = 44.1;  ar_int = 44100; break;
++    case 3 : ar = 48;    ar_int = 48000; break;
++    case 4 : ar = 96;    ar_int = 96000; break;
+   }
+ 
+   switch (s.mpeg_encoder) {
+@@ -593,19 +594,19 @@
+                      break;
+ 
+     case FFMPEGPES :
+-    case FFMPEGTS  : sprintf(cmd, "ffmpeg -f %s -s %s -ad %s:%d -ar %2.1f -vd %s -ac %d -b %d -ab %d -y -hq -re -title %s -author %s -copyright %s -comment %s -aspect %s -tvstd %s %s%s &",
+-                      /* -f           */ (s.mpeg_encoder == FFMPEGTS) ? "mpegts" : "mpeg1video",
++    case FFMPEGTS  : sprintf(cmd, "ffmpeg -ar %d -f oss -i %s -s %s -f %s -i %s -f %s -ac %d -b %d -ab %d -y -re -metadata title=%s -metadata author=%s -metadata comment=%s -aspect %s -tvstd %s %s%s &",
++                      /* -ar          */ ar_int,
++                      /* -f oss -i    */ s.audio_device, /* TODO: use ALSA directly */
+                       /* -s           */ imagesizes[s.image_size],
+-                      /* -ad          */ s.audio_device, s.mixer_line,
+-                      /* -ar          */ ar,
+-                      /* -vd          */ video_device,
++                      /* -f           */ v4l == 1 ? "video4linux" : "video4linux2", 
++                      /* -i           */ video_device,
++                      /* -f           */ (s.mpeg_encoder == FFMPEGTS) ? "mpegts" : "mpeg1video",
+                       /* -ac          */ !s.audio_mode ? 2 : 1,
+-                      /* -b           */ s.video_bit_rate * 100,
+-                      /* -ab          */ s.audio_bit_rate,
+-                      /* -title       */ "analogTV",
+-                      /* -author      */ "analogTV",
+-                      /* -copyright   */ "GPL",
+-                      /* -comment     */ "analogTV",
++                      /* -b           */ s.video_bit_rate * 100000,
++                      /* -ab          */ s.audio_bit_rate * 1000,
++                      /* -metadata title */ "analogTV",
++                      /* -metadata author */ "analogTV",
++                      /* -metadata comment */ "analogTV",
+                       /* -aspect      */ wide ? "16:9" : "4:3",
+                       /* -tvstd       */ tvnorms[videonorm],
+                       /* -deinterlace */ s.deinterlace ? "-deinterlace " : "",

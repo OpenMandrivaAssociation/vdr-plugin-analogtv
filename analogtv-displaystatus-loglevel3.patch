@@ -1,0 +1,21 @@
+diff -Nurp analogtv-1.0.00/device.c analogtv-1.0.00-f/device.c
+--- analogtv-1.0.00/device.c	2006-04-25 20:19:34.000000000 +0300
++++ analogtv-1.0.00-f/device.c	2006-06-12 03:03:04.000000000 +0300
+@@ -950,7 +950,7 @@ bool cAnalogtvDevice::GetTSPacket(uchar 
+ 
+     getTS();
+ 
+-    if (s.debug)
++    if (s.debug > 2)
+       DisplayStatus();
+ 
+     return true;
+@@ -1055,7 +1055,7 @@ bool cAnalogtvDevice::GetTSPacket(uchar 
+         d(1, "skipped %d byte to sync on next GOP", n * TS_SIZE);
+ #endif
+ 
+-      if (s.debug)
++      if (s.debug > 2)
+         DisplayStatus();
+ 
+       Data = buf;

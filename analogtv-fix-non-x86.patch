@@ -1,0 +1,166 @@
+Index: analogtv-1.0.00-x86/Makefile
+===================================================================
+--- analogtv-1.0.00-x86/Makefile
++++ analogtv-1.0.00-x86/Makefile	2010-06-27 03:45:14.015541444 +0300
+@@ -26,8 +26,8 @@
+ ### The C++ compiler and options:
+ 
+ CXX      ?= g++
+-OPTFLAGS ?= -O4 -march=i486 -mcpu=i686 -pipe -ffast-math -fomit-frame-pointer -D_REENTRANT -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+-CXXFLAGS ?= $(OPTFLAGS) -Wall -Woverloaded-virtual
++OPTFLAGS ?= -O4 -pipe -ffast-math -fomit-frame-pointer -D_REENTRANT -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
++CXXFLAGS ?= -Wall -Woverloaded-virtual
+ 
+ ### The directory environment:
+ 
+@@ -75,7 +75,7 @@
+ ### Implicit rules:
+ 
+ %.o: %.c
+-	$(CXX) -Wall $(CXXFLAGS) -c $(DEFINES) $(INCLUDES) $<
++	$(CXX) -Wall $(CXXFLAGS) $(OPTFLAGS) -c $(DEFINES) $(INCLUDES) $<
+ 
+ # Dependencies:
+ 
+@@ -117,10 +117,10 @@
+ .PHONY: all
+ 
+ player-analogtv.o: player-analogtv.c
+-	$(CC) $(CCFLAGS) -c $(DEFINES) $(INCLUDES) $(OPTFLAGS) player-analogtv.c
++	$(CC) $(CFLAGS) -c $(DEFINES) $(INCLUDES) $(OPTFLAGS) player-analogtv.c
+ 
+ libvdr-$(PLUGIN).so: $(OBJS) $(FFLIB)
+-	$(CXX) $(CXXFLAGS) -shared $(OBJS) -ldvbmpegtools -o $@
++	$(CXX) $(CXXFLAGS) $(OPTFLAGS) -shared $(OBJS) -ldvbmpegtools -o $@
+ 	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ dist: clean
+Index: analogtv-1.0.00-x86/analogtv.c
+===================================================================
+--- analogtv-1.0.00-x86/analogtv.c
++++ analogtv-1.0.00-x86/analogtv.c	2010-06-27 04:00:50.485416227 +0300
+@@ -335,7 +335,9 @@
+ 
+ bool cPluginAnalogtv::Start(void) // final initialization, 5. VDR call
+ {
++#ifdef __i386__
+   extern void cpuinfo(void);
++#endif
+ 
+   d(3, "cPluginAnalogtv::Start()");
+ 
+@@ -344,7 +346,9 @@
+   confdir = strdup(ConfigDirectory());
+   d(1, "Detected ConfigDirectory()=\"%s\"", confdir);
+ 
++#ifdef __i386__
+   cpuinfo();
++#endif
+ 
+ #ifdef HAVE_FAST_MEMCPY
+   s.memcpy_method = probe_fast_memcpy(s.memcpy_method);
+Index: analogtv-1.0.00-x86/cpu_accel.h
+===================================================================
+--- analogtv-1.0.00-x86/cpu_accel.h
++++ analogtv-1.0.00-x86/cpu_accel.h	2010-06-27 03:48:33.878541247 +0300
+@@ -50,7 +50,9 @@
+ #ifndef _CPU_ACCEL_H_
+ #define _CPU_ACCEL_H_
+ 
++#ifdef __i386__
+ #define ARCH_X86
++#endif
+ 
+ #include <inttypes.h>
+ 
+Index: analogtv-1.0.00-x86/cpuinfo.c
+===================================================================
+--- analogtv-1.0.00-x86/cpuinfo.c
++++ analogtv-1.0.00-x86/cpuinfo.c	2010-06-27 03:58:19.488541497 +0300
+@@ -28,6 +28,7 @@
+  * Also helped from code in 'cpuinfo.c' found in mplayer.
+  */
+ 
++#ifdef __i386__
+ #include <stdio.h>
+ #include <stdint.h>
+ #include <sys/time.h>
+@@ -55,6 +56,7 @@
+     return (((double) (tsc_end - tsc_start)) / ((double) usec_delay));
+ }
+ 
++
+ typedef struct cpuid_regs {
+     unsigned int eax;
+     unsigned int ebx;
+@@ -236,3 +238,5 @@
+     d(1, "CPU %s", CPU);
+     d(1, "CPU measured at %.3fMHz", CPUspeed = cpuinfo_get_speed());
+ }
++
++#endif
+Index: analogtv-1.0.00-x86/memcpy.c
+===================================================================
+--- analogtv-1.0.00-x86/memcpy.c
++++ analogtv-1.0.00-x86/memcpy.c	2010-06-27 04:24:25.697416294 +0300
+@@ -438,6 +438,7 @@
+       fast_memcpy = memcpy;
+       return(method);
+ 
++#ifdef ARCH_X86
+     case MEMCPY_KERNEL:
+       fast_memcpy = linux_kernel_memcpy;
+       return(method);
+@@ -453,6 +454,7 @@
+     case MEMCPY_SSE:
+       fast_memcpy = sse_memcpy;
+       return(method);
++#endif
+ 
+     case MEMCPY_PROBE:
+     default:
+Index: analogtv-1.0.00-x86/menusetup.c
+===================================================================
+--- analogtv-1.0.00-x86/menusetup.c
++++ analogtv-1.0.00-x86/menusetup.c	2010-06-27 04:00:14.891479006 +0300
+@@ -253,8 +253,10 @@
+   sprintf(t, "%d 0x%04x %.1f%%", sx.hue, (int)(sx.hue * 1927.5), (sx.hue / 34.0 * 100.0));
+   Add(Item(                 tr("Setup.analogTV$[Hue]"),             t));
+ 
++#ifdef __i386__
+   Add(Item(                 tr("Setup.analogTV$[CPU]"),             CPU));
+   Add(Item(                 tr("Setup.analogTV$[Speed (MHz)]"),     CPUspeed));
++#endif
+   Add(Item(                 tr("Setup.analogTV$[memcpy() method]"), memcpys[sx.memcpy_method]));
+   if (sx.clipping && !isPVRx)
+     Add(Item(               tr("Setup.analogTV$[Grab size]"),       grabsizes[sx.image_size]));
+Index: analogtv-1.0.00-x86/player-analogtv.c
+===================================================================
+--- analogtv-1.0.00-x86/player-analogtv.c
++++ analogtv-1.0.00-x86/player-analogtv.c	2010-06-27 04:21:15.466416624 +0300
+@@ -357,8 +357,10 @@
+       fprintf(fo, "\n\tanalogTV plugin version:%s\n", VERSION);
+ 
+       fprintf(fo, "Hardware:\n");
++#ifdef __i386__
+       fprintf(fo, "\tCPU:%s\n", CPU);
+       fprintf(fo, "\tCPUspeed:%.3f MHz\n", CPUspeed);
++#endif
+       fprintf(fo, "\tVideo4Linux:V4L%d\n", v4l);
+ 
+       if (v4l != REQUIRED_VIDEO4LINUX)
+Index: analogtv-1.0.00-x86/player-analogtv.h
+===================================================================
+--- analogtv-1.0.00-x86/player-analogtv.h
++++ analogtv-1.0.00-x86/player-analogtv.h	2010-06-27 03:51:50.780603568 +0300
+@@ -209,8 +209,10 @@
+ _EXTERN int  wide;
+ 
+ _EXTERN int  analogModule;
++#ifdef __i386__
+ _EXTERN char CPU[128];
+ _EXTERN double CPUspeed;
++#endif
+ _EXTERN char capdev[128];
+ _EXTERN char vdrver[16];
+ _EXTERN char ac3ver[16];

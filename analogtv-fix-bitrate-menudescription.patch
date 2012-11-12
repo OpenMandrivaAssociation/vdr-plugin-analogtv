@@ -1,0 +1,41 @@
+Index: analogtv-1.0.00/menusetup.c
+===================================================================
+--- analogtv-1.0.00/menusetup.c
++++ analogtv-1.0.00/menusetup.c	2010-06-27 03:29:51.707603847 +0300
+@@ -163,7 +163,7 @@
+   if (!EncoderNeeded) // sorry, but its too complex at the moment to flip the encoder while running ...
+     Add(new cMenuEditStraItem(tr("Setup.analogTV$Encoder"), &sx.mpeg_encoder, 11, encoders));
+ 
+-  Add(new cMenuEditIntItem( tr("Setup.analogTV$Video bit rate (Mbit/s)/100000"), &sx.video_bit_rate, 1, 80));
++  Add(new cMenuEditIntItem( tr("Setup.analogTV$Video bit rate (Mbit/s)/10"),     &sx.video_bit_rate, 1, 80));
+   Add(new cMenuEditIntItem( tr("Setup.analogTV$Audio bit rate (kbit/s)"),        &sx.audio_bit_rate, 0, 512));
+   Add(new cMenuEditStraItem(tr("Setup.analogTV$Image size"),                     &sx.image_size, 6, imagesizes));
+   Add(new cMenuEditIntItem( tr("Setup.analogTV$Audio volume"),                   &sx.mixer_volume, 0, 100));
+Index: analogtv-1.0.00/po/analogtv.pot
+===================================================================
+--- analogtv-1.0.00/po/analogtv.pot
++++ analogtv-1.0.00/po/analogtv.pot	2010-06-27 03:29:29.338541335 +0300
+@@ -109,7 +109,7 @@
+ msgstr ""
+ 
+ #: menusetup.c:166
+-msgid "Setup.analogTV$Video bit rate (Mbit/s)/100000"
++msgid "Setup.analogTV$Video bit rate (Mbit/s)/10"
+ msgstr ""
+ 
+ #: menusetup.c:167
+Index: analogtv-1.0.00/po/de_DE.po
+===================================================================
+--- analogtv-1.0.00/po/de_DE.po
++++ analogtv-1.0.00/po/de_DE.po	2010-06-27 03:29:40.603416807 +0300
+@@ -108,8 +108,8 @@
+ msgstr "Encoder"
+ 
+ #: menusetup.c:166
+-msgid "Setup.analogTV$Video bit rate (Mbit/s)/100000"
+-msgstr "Video Bitrate (Mbit/s)/100000"
++msgid "Setup.analogTV$Video bit rate (Mbit/s)/10"
++msgstr "Video Bitrate (Mbit/s)/10"
+ 
+ #: menusetup.c:167
+ msgid "Setup.analogTV$Audio bit rate (kbit/s)"

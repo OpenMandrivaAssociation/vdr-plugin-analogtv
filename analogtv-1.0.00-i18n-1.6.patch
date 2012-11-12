@@ -1,0 +1,2687 @@
+
+This is a semi-automatically created i18n adaptation patch and may contain
+errors (such as missing translations). This should only be used as a
+temporary measure until the upstream plugin maintainer fixes the plugin
+properly according to the instructions in i18n-to-gettext.pl.
+
+Created for Mandriva Linux packaging by Anssi Hannula <anssi@mandriva.org>.
+
+
+Index: analogtv-1.0.00/Makefile
+===================================================================
+--- analogtv-1.0.00/Makefile
++++ analogtv-1.0.00/Makefile	2008-04-16 13:04:18.000000000 +0300
+@@ -86,9 +86,34 @@
+ 
+ -include $(DEPFILE)
+ 
++### Internationalization (I18N):
++
++PODIR     = po
++LOCALEDIR = $(VDRDIR)/locale
++I18Npo    = $(wildcard $(PODIR)/*.po)
++I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
++I18Npot   = $(PODIR)/$(PLUGIN).pot
++
++%.mo: %.po
++	msgfmt -c -o $@ $<
++
++$(I18Npot): $(wildcard *.[ch] *.[ch]xx *.cc *.[ch]pp *.hh)
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='<http://qa.mandriva.com/>' -o $@ $^
++
++%.po: $(I18Npot)
++	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
++	@touch $@
++
++$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
++	@mkdir -p $(dir $@)
++	cp $< $@
++
++.PHONY: i18n
++i18n: $(I18Nmsgs)
++
+ ### Targets:
+ 
+-all: libvdr-$(PLUGIN).so
++all: libvdr-$(PLUGIN).so i18n
+ .PHONY: all
+ 
+ player-analogtv.o: player-analogtv.c
+@@ -115,4 +140,5 @@
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
++	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+ 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~
+Index: analogtv-1.0.00/analogtv.c
+===================================================================
+--- analogtv-1.0.00/analogtv.c
++++ analogtv-1.0.00/analogtv.c	2008-04-16 13:08:04.000000000 +0300
+@@ -32,8 +32,8 @@
+ #include "memcpy.h"
+ 
+        const char *VERSION        = "1.0.00";
+-static const char *DESCRIPTION    = "Setup.analogTV$Watch analogue TV";
+-static const char *MAINMENUENTRY  = "Setup.analogTV$Setup AnalogTV";
++static const char *DESCRIPTION    = trNOOP("Setup.analogTV$Watch analogue TV");
++static const char *MAINMENUENTRY  = trNOOP("Setup.analogTV$Setup AnalogTV");
+ 
+ // --- cPluginAnalogtv ------------------------------------------------------
+ 
+@@ -325,7 +325,7 @@
+ 
+ bool cPluginAnalogtv::Initialize(void) // early initialization, 3. VDR call
+ {
+-  RegisterI18n(AnalogtvPhrases);
++  
+ 
+   d(3, "cPluginAnalogtv::Initialize()");
+ 
+@@ -339,7 +339,7 @@
+ 
+   d(3, "cPluginAnalogtv::Start()");
+ 
+-  RegisterI18n(AnalogtvPhrases);
++  
+ 
+   confdir = strdup(ConfigDirectory());
+   d(1, "Detected ConfigDirectory()=\"%s\"", confdir);
+Index: analogtv-1.0.00/encoder.c
+===================================================================
+--- analogtv-1.0.00/encoder.c
++++ analogtv-1.0.00/encoder.c	2008-04-16 12:59:47.000000000 +0300
+@@ -19,7 +19,7 @@
+ #include "memcpy.h"
+ #include <unistd.h>
+ 
+-#include "i18n.h"
++
+ #include <stdint.h>
+ #include "player-analogtv.h"
+ 
+Index: analogtv-1.0.00/i18n.c
+===================================================================
+--- analogtv-1.0.00/i18n.c
++++ analogtv-1.0.00/i18n.c	2008-04-16 13:04:01.000000000 +0300
+@@ -189,1755 +189,3 @@
+     "disabled"
+ };
+ 
+-const tI18nPhrase AnalogtvPhrases[] = {
+-    {
+-        "Setup.analogTV$Watch analogue TV",    // English
+-        "Analoges Fernsehen",                  // Deutsch
+-        "Watch analogue TV", // TODO           // Slovenski
+-        "Watch analogue TV", // TODO           // Italiano
+-        "Watch analogue TV", // TODO           // Nederlands
+-        "Watch analogue TV", // TODO           // Português
+-        "Watch analogue TV", // TODO           // Français
+-        "Watch analogue TV", // TODO           // Norsk
+-        "Watch analogue TV", // TODO           // Suomi
+-        "Watch analogue TV", // TODO           // Polski
+-        "Watch analogue TV", // TODO           // Español
+-        "Watch analogue TV", // TODO           // Ellinika
+-        "Watch analogue TV", // TODO           // Svenska
+-        "Watch analogue TV", // TODO           // Romaneste
+-        "Watch analogue TV", // TODO           // Magyar
+-        "Watch analogue TV"  // TODO           // Català
+-    },
+-    {
+-        "Setup.analogTV$Setup AnalogTV",
+-        "AnalogTV Einstellungen",
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV", // TODO
+-        "Setup AnalogTV"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$analogTV",
+-        "analogTV",
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV", // TODO
+-        "analogTV"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Picture Properties",
+-        "Bildeigenschaften",
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties", // TODO
+-        "Picture Properties"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Brightness",
+-        "Helligkeit",
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness", // TODO
+-        "Brightness"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Contrast",
+-        "Kontrast",
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast", // TODO
+-        "Contrast"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Colour",
+-        "Farbton",
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour", // TODO
+-        "Colour"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Hue",
+-        "Sättigung",
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue", // TODO
+-        "Hue"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Finetune",
+-        "Feintuning",
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune", // TODO
+-        "Finetune"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$EPG",
+-        "EPG",
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG", // TODO
+-        "EPG"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Load EPG now",
+-        "EPG jetzt laden",
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now", // TODO
+-        "Load EPG now"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$EPG from",
+-        "EPG aus",
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from", // TODO
+-        "EPG from"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$External program",
+-        "Externes Programm",
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program", // TODO
+-        "External program"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$EPG provider",
+-        "EPG Anbieter",
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider", // TODO
+-        "EPG provider"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Autoupdate (hours)",
+-        "Automatisch laden (Stunden)",
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)", // TODO
+-        "Autoupdate (hours)"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Theme language",
+-        "Thema in Sprache",
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language", // TODO
+-        "Theme language"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$MPEG Encoder",
+-        "MPEG Encoder",
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder", // TODO
+-        "MPEG Encoder"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Restart encoder",
+-        "Neustart",
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart", // TODO
+-        "Restart"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Stop encoder",
+-        "Encoder stoppen",
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder", // TODO
+-        "Stop encoder"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Encoder",
+-        "Encoder",
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder", // TODO
+-        "Encoder"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Video bit rate (Mbit/s)/100000",
+-        "Video Bitrate (Mbit/s)/100000",
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000", // TODO
+-        "Video bit rate (Mbit/s)/100000"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Audio bit rate (kbit/s)",
+-        "Audio Bitrate (kbit/s)",
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)", // TODO
+-        "Audio bit rate (kbit/s)"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Image size",
+-        "Bildgröße",
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size", // TODO
+-        "Image size"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Clipping",
+-        "Ränder abschneiden",
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping", // TODO
+-        "Clipping"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$GOP sequence",
+-        "GOP Sequenz",
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence", // TODO
+-        "GOP sequence"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Filter",
+-        "Filter",
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter", // TODO
+-        "Filter"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Motion compensation min",
+-        "Bewegungskompensation min",
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min", // TODO
+-        "Motion compensation min"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Motion compensation max",
+-        "Bewegungskompensation max",
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max", // TODO
+-        "Motion compensation max"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Deinterlacing",
+-        "Zeilensprung entfernen",
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing", // TODO
+-        "Deinterlacing"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Profile",
+-        "Profil",
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile", // TODO
+-        "Profile"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$MPEG",
+-        "MPEG",
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG", // TODO
+-        "MPEG"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Test",
+-        "Test",
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test", // TODO
+-        "Test"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Audiodevice",
+-        "Audioeinheit",
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice", // TODO
+-        "Audiodevice"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$PCM device",
+-        "Audioeinheit",
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device", // TODO
+-        "PCM device"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$OSS Mixer device",
+-        "OSS Mixereinheit",
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device", // TODO
+-        "OSS Mixer device"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$OSS Mixer input",
+-        "OSS Mixereingang",
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input", // TODO
+-        "OSS Mixer input"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Audio volume",
+-        "Lautstärke",
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume", // TODO
+-        "Audio volume"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Use PVR350 TV-out",
+-        "PVR350 TV-Ausgang verwenden",
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out", // TODO
+-        "Use PVR350 TV-out"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$GOP size",
+-        "GOP Größe",
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size", // TODO
+-        "GOP size"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$B frames",
+-        "B frames",
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames", // TODO
+-        "B frames"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$GOP",
+-        "GOP",
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP", // TODO
+-        "GOP"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Noise removal filter",
+-        "Störungsbeseitigungsfilter",
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter", // TODO
+-        "Noise removal filter"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Spatial",
+-        "Räumlich",
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial", // TODO
+-        "Spatial"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Temporal",
+-        "Zeitlich",
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal", // TODO
+-        "Temporal"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Type",
+-        "Type",
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type", // TODO
+-        "Type"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Bitrate mode",
+-        "Bitrate Modus",
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode", // TODO
+-        "Bitrate mode"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Aspect",
+-        "Aspekt",
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect", // TODO
+-        "Aspect"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$3:2 pulldown",
+-        "3:2 pulldown",
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown", // TODO
+-        "3:2 pulldown"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$On the fly remux",
+-        "On the fly remux",
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux", // TODO
+-        "On the fly remux"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Hacks",
+-        "Hacks",
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks", // TODO
+-        "Hacks"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$sync hack",
+-        "sync hack",
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack", // TODO
+-        "sync hack"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$wining hack",
+-        "wining hack",
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack", // TODO
+-        "wining hack"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$picture properties hack",
+-        "picture properties hack",
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack", // TODO
+-        "picture properties hack"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$stuttering hack",
+-        "stuttering hack",
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack", // TODO
+-        "stuttering hack"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Audio mode",
+-        "Audiomodus",
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode", // TODO
+-        "Audio mode"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Audio sample rate",
+-        "Sample rate",
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate", // TODO
+-        "Audio sample rate"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Psychoacoustic analysis",
+-        "Psychoakustische Analyse",
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis", // TODO
+-        "Psychoacoustic analysis"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Various",
+-        "Diverses",
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various", // TODO
+-        "Various"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Debug level",
+-        "Debug level",
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level", // TODO
+-        "Debug level"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Debug output",
+-        "Debug Ausgabe",
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output", // TODO
+-        "Debug output"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Report",
+-        "Protokoll",
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report", // TODO
+-        "Report"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Hide Mainmenu Entry",
+-        "Verstecke Hauptmenüeintrag",
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry", // TODO
+-        "Hide Mainmenu Entry"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Encoder always running",
+-        "Encoder läuft immer",
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running", // TODO
+-        "Encoder always running"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Link to encoder",
+-        "Verbindung zum Encoder",
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder", // TODO
+-        "Link to encoder"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$read()",
+-        "read()",
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()", // TODO
+-        "read()"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$select()",
+-        "select()",
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()", // TODO
+-        "select()"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Reset",
+-        "Zurücksetzen",
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset", // TODO
+-        "Reset"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Internals",
+-        "Internes",
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals", // TODO
+-        "Internals"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Video source]",
+-        "[Videoquelle]",
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]", // TODO
+-        "[Video source]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Unknown",
+-        "Unbekannt",
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown", // TODO
+-        "Unknown"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Encoder running]",
+-        "[läuft der Encoder]",
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]", // TODO
+-        "[Encoder running]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Encoder needed]",
+-        "[wird Encoder benötigt]",
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]", // TODO
+-        "[Encoder needed]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Frequency]",
+-        "[Frequenz]",
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]", // TODO
+-        "[Frequency]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Brightness]",
+-        "[Helligkeit]",
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]", // TODO
+-        "[Brightness]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Contrast]",
+-        "[Kontrast]",
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]", // TODO
+-        "[Contrast]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Colour]",
+-        "[Farbe]",
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]", // TODO
+-        "[Colour]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Hue]",
+-        "[Sättigung]",
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]", // TODO
+-        "[Hue]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[CPU]",
+-        "[CPU]",
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]", // TODO
+-        "[CPU]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Speed (MHz)]",
+-        "[Geschwindigkeit (MHz)]",
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]", // TODO
+-        "[Speed (MHz)]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[memcpy() method]",
+-        "[memcpy() Methode]",
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]", // TODO
+-        "[memcpy() method]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$[Grab size]",
+-        "[Grabbing Größe]",
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]", // TODO
+-        "[Grab size]"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Cannot change encoder now!",
+-        "Encoder kann momentan nicht gewechselt werden!",
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!", // TODO
+-        "Cannot change encoder now!"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Cannot change image size now!",
+-        "Bildgröße kann momentan nicht geändert werden!",
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!", // TODO
+-        "Cannot change image size now!"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Loading of EPG failed",
+-        "Laden des EPG fehlgeschlagen",
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed", // TODO
+-        "Loading of EPG failed"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Really stop encoder?",
+-        "Wirklich Encoder stoppen?",
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?", // TODO
+-        "Really stop encoder?"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Cannot stop encoder now!",
+-        "Encoder kann jetzt nicht gestoppt werden!",
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!", // TODO
+-        "Cannot stop encoder now!"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Encoder does not run!",
+-        "Encoder läuft nicht!",
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!", // TODO
+-        "Encoder does not run!"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Really reset analogTV plugin?",
+-        "Wirklich analogTV plugin zurücksetzen?",
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?", // TODO
+-        "Really reset analogTV plugin?"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$No",
+-        "Nein",
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No", // TODO
+-        "No"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$Yes",
+-        "Ja",
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes", // TODO
+-        "Yes"  // TODO
+-    },
+-    {
+-        "Setup.analogTV$DigiBox control",
+-        "DigiBox Kontrolle",
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-        "DigiBox control",   // TODO
+-    },
+-    {
+-        "Setup.analogTV$Digibox Mode",
+-        "Digibox Modus",
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-        "Digibox Mode",      // TODO
+-    },
+-    {
+-	"Setup.analogTV$Redremote Device",
+-	"Redremote Gerät",
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-	"Redremote Device",  // TODO
+-    },
+-    {
+-	"Setup.analogTV$Backup Hack",
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-	"Backup Hack",       // TODO
+-    },
+-    {
+-	"Setup.analogTV$Backup Interval",
+-	"Backup Abstand",
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-	"Backup Interval",   // TODO
+-    },
+-    {
+-	"Setup.analogTV$Fast Channel Change",
+-	"Schneller Kanalwechsel", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-	"Fast channel change", //TODO
+-    },
+-    { NULL }
+-};
+-
+-#if 0 // Template
+-    {
+-        "Setup.analogTV$",
+-        "",
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        "", // TODO
+-        ""  // TODO
+-    },
+-#endif
+Index: analogtv-1.0.00/i18n.h
+===================================================================
+--- analogtv-1.0.00/i18n.h
++++ analogtv-1.0.00/i18n.h	2008-04-16 13:01:33.000000000 +0300
+@@ -14,10 +14,7 @@
+ #ifndef __ANALOGTV_I18N_H
+ #define __ANALOGTV_I18N_H
+ 
+-#include <vdr/i18n.h>
+ #include <sys/soundcard.h>
+ #include "msg.h"
+ 
+-extern const tI18nPhrase AnalogtvPhrases[];
+-
+ #endif // __ANALOGTV_I18N_H
+Index: analogtv-1.0.00/po/analogtv.pot
+===================================================================
+--- analogtv-1.0.00/po/analogtv.pot
++++ analogtv-1.0.00/po/analogtv.pot	2008-04-16 12:59:47.000000000 +0300
+@@ -0,0 +1,401 @@
++# SOME DESCRIPTIVE TITLE.
++# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the PACKAGE package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++#, fuzzy
++msgid ""
++msgstr ""
++"Project-Id-Version: PACKAGE VERSION\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-16 12:59+0300\n"
++"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: LANGUAGE <LL@li.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=CHARSET\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: analogtv.c:35
++msgid "Setup.analogTV$Watch analogue TV"
++msgstr ""
++
++#: analogtv.c:36
++msgid "Setup.analogTV$Setup AnalogTV"
++msgstr ""
++
++#: analogtv.c:402 menusetup.c:500 menusetup.c:502
++msgid "Setup.analogTV$Loading of EPG failed"
++msgstr ""
++
++#: menusetup.c:121
++msgid "Setup.analogTV$No"
++msgstr ""
++
++#: menusetup.c:121
++msgid "Setup.analogTV$Yes"
++msgstr ""
++
++#: menusetup.c:129
++msgid "Setup.analogTV$analogTV"
++msgstr ""
++
++#: menusetup.c:132
++msgid "Setup.analogTV$Picture Properties"
++msgstr ""
++
++#: menusetup.c:134
++msgid "Setup.analogTV$Brightness"
++msgstr ""
++
++#: menusetup.c:135
++msgid "Setup.analogTV$Contrast"
++msgstr ""
++
++#: menusetup.c:136
++msgid "Setup.analogTV$Colour"
++msgstr ""
++
++#: menusetup.c:137
++msgid "Setup.analogTV$Hue"
++msgstr ""
++
++#: menusetup.c:139
++msgid "Setup.analogTV$Finetune"
++msgstr ""
++
++#: menusetup.c:142
++msgid "Setup.analogTV$EPG"
++msgstr ""
++
++#: menusetup.c:144 menusetup.c:262
++msgid "Setup.analogTV$Load EPG now"
++msgstr ""
++
++#: menusetup.c:146
++msgid "Setup.analogTV$EPG from"
++msgstr ""
++
++#: menusetup.c:147
++msgid "Setup.analogTV$External program"
++msgstr ""
++
++#: menusetup.c:148
++msgid "Setup.analogTV$EPG provider"
++msgstr ""
++
++#: menusetup.c:149
++msgid "Setup.analogTV$Autoupdate (hours)"
++msgstr ""
++
++#: menusetup.c:151
++msgid "Setup.analogTV$Theme language"
++msgstr ""
++
++#: menusetup.c:153
++msgid "Setup.analogTV$MPEG Encoder"
++msgstr ""
++
++#: menusetup.c:157
++msgid "Setup.analogTV$Restart encoder"
++msgstr ""
++
++#: menusetup.c:160 menusetup.c:264
++msgid "Setup.analogTV$Stop encoder"
++msgstr ""
++
++#: menusetup.c:164
++msgid "Setup.analogTV$Encoder"
++msgstr ""
++
++#: menusetup.c:166
++msgid "Setup.analogTV$Video bit rate (Mbit/s)/100000"
++msgstr ""
++
++#: menusetup.c:167
++msgid "Setup.analogTV$Audio bit rate (kbit/s)"
++msgstr ""
++
++#: menusetup.c:168
++msgid "Setup.analogTV$Image size"
++msgstr ""
++
++#: menusetup.c:169
++msgid "Setup.analogTV$Audio volume"
++msgstr ""
++
++#: menusetup.c:173
++msgid "Setup.analogTV$Use PVR350 TV-out"
++msgstr ""
++
++#: menusetup.c:175
++msgid "Setup.analogTV$GOP size"
++msgstr ""
++
++#: menusetup.c:176
++msgid "Setup.analogTV$B frames"
++msgstr ""
++
++#: menusetup.c:177
++msgid "Setup.analogTV$GOP"
++msgstr ""
++
++#: menusetup.c:178
++msgid "Setup.analogTV$Noise removal filter"
++msgstr ""
++
++#: menusetup.c:179
++msgid "Setup.analogTV$Spatial"
++msgstr ""
++
++#: menusetup.c:180
++msgid "Setup.analogTV$Temporal"
++msgstr ""
++
++#: menusetup.c:181
++msgid "Setup.analogTV$Type"
++msgstr ""
++
++#: menusetup.c:182
++msgid "Setup.analogTV$Bitrate mode"
++msgstr ""
++
++#: menusetup.c:183
++msgid "Setup.analogTV$Aspect"
++msgstr ""
++
++#: menusetup.c:184
++msgid "Setup.analogTV$3:2 pulldown"
++msgstr ""
++
++#: menusetup.c:185
++msgid "Setup.analogTV$On the fly remux"
++msgstr ""
++
++#: menusetup.c:187
++msgid "Setup.analogTV$Hacks"
++msgstr ""
++
++#: menusetup.c:188
++msgid "Setup.analogTV$sync hack"
++msgstr ""
++
++#: menusetup.c:189
++msgid "Setup.analogTV$wining hack"
++msgstr ""
++
++#: menusetup.c:190
++msgid "Setup.analogTV$picture properties hack"
++msgstr ""
++
++#: menusetup.c:191
++msgid "Setup.analogTV$stuttering hack"
++msgstr ""
++
++#: menusetup.c:194
++msgid "Setup.analogTV$Clipping"
++msgstr ""
++
++#: menusetup.c:195
++msgid "Setup.analogTV$GOP sequence"
++msgstr ""
++
++#: menusetup.c:196
++msgid "Setup.analogTV$Filter"
++msgstr ""
++
++#: menusetup.c:197
++msgid "Setup.analogTV$Motion compensation min"
++msgstr ""
++
++#: menusetup.c:198
++msgid "Setup.analogTV$Motion compensation max"
++msgstr ""
++
++#: menusetup.c:199
++msgid "Setup.analogTV$Deinterlacing"
++msgstr ""
++
++#: menusetup.c:203
++msgid "Setup.analogTV$Test"
++msgstr ""
++
++#: menusetup.c:204
++msgid "Setup.analogTV$Link to encoder"
++msgstr ""
++
++#: menusetup.c:204
++msgid "Setup.analogTV$read()"
++msgstr ""
++
++#: menusetup.c:204
++msgid "Setup.analogTV$select()"
++msgstr ""
++
++#: menusetup.c:205
++msgid "Setup.analogTV$Encoder always running"
++msgstr ""
++
++#: menusetup.c:207
++msgid "Setup.analogTV$Audiodevice"
++msgstr ""
++
++#: menusetup.c:208
++msgid "Setup.analogTV$PCM device"
++msgstr ""
++
++#: menusetup.c:209
++msgid "Setup.analogTV$OSS Mixer device"
++msgstr ""
++
++#: menusetup.c:210
++msgid "Setup.analogTV$OSS Mixer input"
++msgstr ""
++
++#: menusetup.c:211
++msgid "Setup.analogTV$Audio mode"
++msgstr ""
++
++#: menusetup.c:212
++msgid "Setup.analogTV$Audio sample rate"
++msgstr ""
++
++#: menusetup.c:213
++msgid "Setup.analogTV$Psychoacoustic analysis"
++msgstr ""
++
++#: menusetup.c:216
++msgid "Setup.analogTV$Various"
++msgstr ""
++
++#: menusetup.c:217
++msgid "Setup.analogTV$Profile"
++msgstr ""
++
++#: menusetup.c:218
++msgid "Setup.analogTV$Debug level"
++msgstr ""
++
++#: menusetup.c:219
++msgid "Setup.analogTV$Debug output"
++msgstr ""
++
++#: menusetup.c:220
++msgid "Setup.analogTV$Report"
++msgstr ""
++
++#: menusetup.c:221
++msgid "Setup.analogTV$Hide Mainmenu Entry"
++msgstr ""
++
++#: menusetup.c:223 menusetup.c:265
++msgid "Setup.analogTV$Reset"
++msgstr ""
++
++#: menusetup.c:225
++msgid "Setup.analogTV$DigiBox control"
++msgstr ""
++
++#: menusetup.c:226
++msgid "Setup.analogTV$Digibox Mode"
++msgstr ""
++
++#: menusetup.c:227
++msgid "Setup.analogTV$Redremote Device"
++msgstr ""
++
++#: menusetup.c:228
++msgid "Setup.analogTV$Backup Hack"
++msgstr ""
++
++#: menusetup.c:229
++msgid "Setup.analogTV$Backup Interval"
++msgstr ""
++
++#: menusetup.c:230
++msgid "Setup.analogTV$Fast Channel Change"
++msgstr ""
++
++#: menusetup.c:232
++msgid "Setup.analogTV$Internals"
++msgstr ""
++
++#: menusetup.c:233 menusetup.c:239
++msgid "Setup.analogTV$Unknown"
++msgstr ""
++
++#: menusetup.c:233
++msgid "Setup.analogTV$[Video source]"
++msgstr ""
++
++#: menusetup.c:235
++msgid "Setup.analogTV$[Encoder running]"
++msgstr ""
++
++#: menusetup.c:236
++msgid "Setup.analogTV$[Encoder needed]"
++msgstr ""
++
++#: menusetup.c:242
++msgid "Setup.analogTV$[Frequency]"
++msgstr ""
++
++#: menusetup.c:245
++msgid "Setup.analogTV$[Brightness]"
++msgstr ""
++
++#: menusetup.c:248
++msgid "Setup.analogTV$[Contrast]"
++msgstr ""
++
++#: menusetup.c:251
++msgid "Setup.analogTV$[Colour]"
++msgstr ""
++
++#: menusetup.c:254
++msgid "Setup.analogTV$[Hue]"
++msgstr ""
++
++#: menusetup.c:256
++msgid "Setup.analogTV$[CPU]"
++msgstr ""
++
++#: menusetup.c:257
++msgid "Setup.analogTV$[Speed (MHz)]"
++msgstr ""
++
++#: menusetup.c:258
++msgid "Setup.analogTV$[memcpy() method]"
++msgstr ""
++
++#: menusetup.c:260
++msgid "Setup.analogTV$[Grab size]"
++msgstr ""
++
++#: menusetup.c:263
++msgid "Setup.analogTV$Restart"
++msgstr ""
++
++#: menusetup.c:473 menusetup.c:475
++msgid "Setup.analogTV$Cannot change encoder now!"
++msgstr ""
++
++#: menusetup.c:480 menusetup.c:482
++msgid "Setup.analogTV$Cannot change image size now!"
++msgstr ""
++
++#: menusetup.c:520 menusetup.c:522 menusetup.c:551 menusetup.c:553
++msgid "Setup.analogTV$Encoder does not run!"
++msgstr ""
++
++#: menusetup.c:533
++msgid "Setup.analogTV$Really stop encoder?"
++msgstr ""
++
++#: menusetup.c:544 menusetup.c:546
++msgid "Setup.analogTV$Cannot stop encoder now!"
++msgstr ""
++
++#: menusetup.c:561
++msgid "Setup.analogTV$Really reset analogTV plugin?"
++msgstr ""
+Index: analogtv-1.0.00/po/de_DE.po
+===================================================================
+--- analogtv-1.0.00/po/de_DE.po
++++ analogtv-1.0.00/po/de_DE.po	2008-04-16 12:59:47.000000000 +0300
+@@ -0,0 +1,400 @@
++# VDR analogtv plugin language source file.
++# Copyright (C) YEAR THE VDR-analogtv'S COPYRIGHT HOLDER
++# This file is distributed under the same license as the VDR-analogtv package.
++# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR-analogtv\n"
++"Report-Msgid-Bugs-To: http://qa.mandriva.com/\n"
++"POT-Creation-Date: 2008-04-16 12:59+0300\n"
++"PO-Revision-Date: 2008-04-16 12:59+0300\n"
++"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: analogtv.c:35
++msgid "Setup.analogTV$Watch analogue TV"
++msgstr "Analoges Fernsehen"
++
++#: analogtv.c:36
++msgid "Setup.analogTV$Setup AnalogTV"
++msgstr "AnalogTV Einstellungen"
++
++#: analogtv.c:402 menusetup.c:500 menusetup.c:502
++msgid "Setup.analogTV$Loading of EPG failed"
++msgstr "Laden des EPG fehlgeschlagen"
++
++#: menusetup.c:121
++msgid "Setup.analogTV$No"
++msgstr "Nein"
++
++#: menusetup.c:121
++msgid "Setup.analogTV$Yes"
++msgstr "Ja"
++
++#: menusetup.c:129
++msgid "Setup.analogTV$analogTV"
++msgstr "analogTV"
++
++#: menusetup.c:132
++msgid "Setup.analogTV$Picture Properties"
++msgstr "Bildeigenschaften"
++
++#: menusetup.c:134
++msgid "Setup.analogTV$Brightness"
++msgstr "Helligkeit"
++
++#: menusetup.c:135
++msgid "Setup.analogTV$Contrast"
++msgstr "Kontrast"
++
++#: menusetup.c:136
++msgid "Setup.analogTV$Colour"
++msgstr "Farbton"
++
++#: menusetup.c:137
++msgid "Setup.analogTV$Hue"
++msgstr "Sättigung"
++
++#: menusetup.c:139
++msgid "Setup.analogTV$Finetune"
++msgstr "Feintuning"
++
++#: menusetup.c:142
++msgid "Setup.analogTV$EPG"
++msgstr "EPG"
++
++#: menusetup.c:144 menusetup.c:262
++msgid "Setup.analogTV$Load EPG now"
++msgstr "EPG jetzt laden"
++
++#: menusetup.c:146
++msgid "Setup.analogTV$EPG from"
++msgstr "EPG aus"
++
++#: menusetup.c:147
++msgid "Setup.analogTV$External program"
++msgstr "Externes Programm"
++
++#: menusetup.c:148
++msgid "Setup.analogTV$EPG provider"
++msgstr "EPG Anbieter"
++
++#: menusetup.c:149
++msgid "Setup.analogTV$Autoupdate (hours)"
++msgstr "Automatisch laden (Stunden)"
++
++#: menusetup.c:151
++msgid "Setup.analogTV$Theme language"
++msgstr "Thema in Sprache"
++
++#: menusetup.c:153
++msgid "Setup.analogTV$MPEG Encoder"
++msgstr "MPEG Encoder"
++
++#: menusetup.c:157
++msgid "Setup.analogTV$Restart encoder"
++msgstr "Neustart"
++
++#: menusetup.c:160 menusetup.c:264
++msgid "Setup.analogTV$Stop encoder"
++msgstr "Encoder stoppen"
++
++#: menusetup.c:164
++msgid "Setup.analogTV$Encoder"
++msgstr "Encoder"
++
++#: menusetup.c:166
++msgid "Setup.analogTV$Video bit rate (Mbit/s)/100000"
++msgstr "Video Bitrate (Mbit/s)/100000"
++
++#: menusetup.c:167
++msgid "Setup.analogTV$Audio bit rate (kbit/s)"
++msgstr "Audio Bitrate (kbit/s)"
++
++#: menusetup.c:168
++msgid "Setup.analogTV$Image size"
++msgstr "Bildgröße"
++
++#: menusetup.c:169
++msgid "Setup.analogTV$Audio volume"
++msgstr "Lautstärke"
++
++#: menusetup.c:173
++msgid "Setup.analogTV$Use PVR350 TV-out"
++msgstr "PVR350 TV-Ausgang verwenden"
++
++#: menusetup.c:175
++msgid "Setup.analogTV$GOP size"
++msgstr "GOP Größe"
++
++#: menusetup.c:176
++msgid "Setup.analogTV$B frames"
++msgstr "B frames"
++
++#: menusetup.c:177
++msgid "Setup.analogTV$GOP"
++msgstr "GOP"
++
++#: menusetup.c:178
++msgid "Setup.analogTV$Noise removal filter"
++msgstr "Störungsbeseitigungsfilter"
++
++#: menusetup.c:179
++msgid "Setup.analogTV$Spatial"
++msgstr "Räumlich"
++
++#: menusetup.c:180
++msgid "Setup.analogTV$Temporal"
++msgstr "Zeitlich"
++
++#: menusetup.c:181
++msgid "Setup.analogTV$Type"
++msgstr "Type"
++
++#: menusetup.c:182
++msgid "Setup.analogTV$Bitrate mode"
++msgstr "Bitrate Modus"
++
++#: menusetup.c:183
++msgid "Setup.analogTV$Aspect"
++msgstr "Aspekt"
++
++#: menusetup.c:184
++msgid "Setup.analogTV$3:2 pulldown"
++msgstr "3:2 pulldown"
++
++#: menusetup.c:185
++msgid "Setup.analogTV$On the fly remux"
++msgstr "On the fly remux"
++
++#: menusetup.c:187
++msgid "Setup.analogTV$Hacks"
++msgstr "Hacks"
++
++#: menusetup.c:188
++msgid "Setup.analogTV$sync hack"
++msgstr "sync hack"
++
++#: menusetup.c:189
++msgid "Setup.analogTV$wining hack"
++msgstr "wining hack"
++
++#: menusetup.c:190
++msgid "Setup.analogTV$picture properties hack"
++msgstr "picture properties hack"
++
++#: menusetup.c:191
++msgid "Setup.analogTV$stuttering hack"
++msgstr "stuttering hack"
++
++#: menusetup.c:194
++msgid "Setup.analogTV$Clipping"
++msgstr "Ränder abschneiden"
++
++#: menusetup.c:195
++msgid "Setup.analogTV$GOP sequence"
++msgstr "GOP Sequenz"
++
++#: menusetup.c:196
++msgid "Setup.analogTV$Filter"
++msgstr "Filter"
++
++#: menusetup.c:197
++msgid "Setup.analogTV$Motion compensation min"
++msgstr "Bewegungskompensation min"
++
++#: menusetup.c:198
++msgid "Setup.analogTV$Motion compensation max"
++msgstr "Bewegungskompensation max"
++
++#: menusetup.c:199
++msgid "Setup.analogTV$Deinterlacing"
++msgstr "Zeilensprung entfernen"
++
++#: menusetup.c:203
++msgid "Setup.analogTV$Test"
++msgstr "Test"
++
++#: menusetup.c:204
++msgid "Setup.analogTV$Link to encoder"
++msgstr "Verbindung zum Encoder"
++
++#: menusetup.c:204
++msgid "Setup.analogTV$read()"
++msgstr "read()"
++
++#: menusetup.c:204
++msgid "Setup.analogTV$select()"
++msgstr "select()"
++
++#: menusetup.c:205
++msgid "Setup.analogTV$Encoder always running"
++msgstr "Encoder läuft immer"
++
++#: menusetup.c:207
++msgid "Setup.analogTV$Audiodevice"
++msgstr "Audioeinheit"
++
++#: menusetup.c:208
++msgid "Setup.analogTV$PCM device"
++msgstr "Audioeinheit"
++
++#: menusetup.c:209
++msgid "Setup.analogTV$OSS Mixer device"
++msgstr "OSS Mixereinheit"
++
++#: menusetup.c:210
++msgid "Setup.analogTV$OSS Mixer input"
++msgstr "OSS Mixereingang"
++
++#: menusetup.c:211
++msgid "Setup.analogTV$Audio mode"
++msgstr "Audiomodus"
++
++#: menusetup.c:212
++msgid "Setup.analogTV$Audio sample rate"
++msgstr "Sample rate"
++
++#: menusetup.c:213
++msgid "Setup.analogTV$Psychoacoustic analysis"
++msgstr "Psychoakustische Analyse"
++
++#: menusetup.c:216
++msgid "Setup.analogTV$Various"
++msgstr "Diverses"
++
++#: menusetup.c:217
++msgid "Setup.analogTV$Profile"
++msgstr "Profil"
++
++#: menusetup.c:218
++msgid "Setup.analogTV$Debug level"
++msgstr "Debug level"
++
++#: menusetup.c:219
++msgid "Setup.analogTV$Debug output"
++msgstr "Debug Ausgabe"
++
++#: menusetup.c:220
++msgid "Setup.analogTV$Report"
++msgstr "Protokoll"
++
++#: menusetup.c:221
++msgid "Setup.analogTV$Hide Mainmenu Entry"
++msgstr "Verstecke Hauptmenüeintrag"
++
++#: menusetup.c:223 menusetup.c:265
++msgid "Setup.analogTV$Reset"
++msgstr "Zurücksetzen"
++
++#: menusetup.c:225
++msgid "Setup.analogTV$DigiBox control"
++msgstr "DigiBox Kontrolle"
++
++#: menusetup.c:226
++msgid "Setup.analogTV$Digibox Mode"
++msgstr "Digibox Modus"
++
++#: menusetup.c:227
++msgid "Setup.analogTV$Redremote Device"
++msgstr "Redremote Gerät"
++
++#: menusetup.c:228
++msgid "Setup.analogTV$Backup Hack"
++msgstr ""
++
++#: menusetup.c:229
++msgid "Setup.analogTV$Backup Interval"
++msgstr "Backup Abstand"
++
++#: menusetup.c:230
++msgid "Setup.analogTV$Fast Channel Change"
++msgstr ""
++
++#: menusetup.c:232
++msgid "Setup.analogTV$Internals"
++msgstr "Internes"
++
++#: menusetup.c:233 menusetup.c:239
++msgid "Setup.analogTV$Unknown"
++msgstr "Unbekannt"
++
++#: menusetup.c:233
++msgid "Setup.analogTV$[Video source]"
++msgstr "[Videoquelle]"
++
++#: menusetup.c:235
++msgid "Setup.analogTV$[Encoder running]"
++msgstr "[läuft der Encoder]"
++
++#: menusetup.c:236
++msgid "Setup.analogTV$[Encoder needed]"
++msgstr "[wird Encoder benötigt]"
++
++#: menusetup.c:242
++msgid "Setup.analogTV$[Frequency]"
++msgstr "[Frequenz]"
++
++#: menusetup.c:245
++msgid "Setup.analogTV$[Brightness]"
++msgstr "[Helligkeit]"
++
++#: menusetup.c:248
++msgid "Setup.analogTV$[Contrast]"
++msgstr "[Kontrast]"
++
++#: menusetup.c:251
++msgid "Setup.analogTV$[Colour]"
++msgstr "[Farbe]"
++
++#: menusetup.c:254
++msgid "Setup.analogTV$[Hue]"
++msgstr "[Sättigung]"
++
++#: menusetup.c:256
++msgid "Setup.analogTV$[CPU]"
++msgstr "[CPU]"
++
++#: menusetup.c:257
++msgid "Setup.analogTV$[Speed (MHz)]"
++msgstr "[Geschwindigkeit (MHz)]"
++
++#: menusetup.c:258
++msgid "Setup.analogTV$[memcpy() method]"
++msgstr "[memcpy() Methode]"
++
++#: menusetup.c:260
++msgid "Setup.analogTV$[Grab size]"
++msgstr "[Grabbing Größe]"
++
++#: menusetup.c:263
++msgid "Setup.analogTV$Restart"
++msgstr ""
++
++#: menusetup.c:473 menusetup.c:475
++msgid "Setup.analogTV$Cannot change encoder now!"
++msgstr "Encoder kann momentan nicht gewechselt werden!"
++
++#: menusetup.c:480 menusetup.c:482
++msgid "Setup.analogTV$Cannot change image size now!"
++msgstr "Bildgröße kann momentan nicht geändert werden!"
++
++#: menusetup.c:520 menusetup.c:522 menusetup.c:551 menusetup.c:553
++msgid "Setup.analogTV$Encoder does not run!"
++msgstr "Encoder läuft nicht!"
++
++#: menusetup.c:533
++msgid "Setup.analogTV$Really stop encoder?"
++msgstr "Wirklich Encoder stoppen?"
++
++#: menusetup.c:544 menusetup.c:546
++msgid "Setup.analogTV$Cannot stop encoder now!"
++msgstr "Encoder kann jetzt nicht gestoppt werden!"
++
++#: menusetup.c:561
++msgid "Setup.analogTV$Really reset analogTV plugin?"
++msgstr "Wirklich analogTV plugin zurücksetzen?"
