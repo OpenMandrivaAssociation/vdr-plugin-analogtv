@@ -88,3 +88,119 @@ rm -rf %{buildroot}
 %doc channels.conf.analogue.generic
 
 
+
+
+%changelog
+* Sun Jun 27 2010 Anssi Hannula <anssi@mandriva.org> 1.0.00-20mdv2010.1
++ Revision: 549191
+- fix module load on non-x86 (fix-non-x86.patch, #59681); previous hacks
+  were incorporated into this proper patch as well
+- use direct syslog output by default (default-syslog.patch, fixes
+  VDR startup when "any" is used in VDR_PLUGINS variable)
+- fix non-threadsafe calls to time functions (threadsafety.patch)
+- fix bitrate description in configuration menu
+  (fix-bitrate-menudescription.patch)
+- update FFmpeg params for current FFmpeg (update-ffmpeg-params.patch)
+- disable private SIP, no longer needed with current VDR
+- clean some C++ code (sane-c++.patch from e-tobi)
+
+* Tue Jul 28 2009 Anssi Hannula <anssi@mandriva.org> 1.0.00-19mdv2010.0
++ Revision: 401088
+- rebuild for new VDR
+- adapt for vdr flags changes, bump buildrequires
+- build player-analogtv.c with correct flags as well
+- disable hardcoded -march and -mcpu in Makefile
+- enable non-x86 build by disabling HAVE_FAST_MEMCPY and skipping
+  cpuinfo.c and cpu_accel.c completely
+
+* Fri Mar 20 2009 Anssi Hannula <anssi@mandriva.org> 1.0.00-18mdv2009.1
++ Revision: 359277
+- rebuild for new vdr
+
+* Mon Apr 28 2008 Anssi Hannula <anssi@mandriva.org> 1.0.00-17mdv2009.0
++ Revision: 197894
+- rebuild for new vdr
+
+* Sat Apr 26 2008 Anssi Hannula <anssi@mandriva.org> 1.0.00-16mdv2009.0
++ Revision: 197626
+- add vdr_plugin_prep
+- bump buildrequires on vdr-devel
+- adapt to gettext i18n of VDR 1.6 (semi-automatic patch)
+
+* Fri Jan 04 2008 Anssi Hannula <anssi@mandriva.org> 1.0.00-15mdv2008.1
++ Revision: 145014
+- rebuild for new vdr
+
+* Fri Jan 04 2008 Anssi Hannula <anssi@mandriva.org> 1.0.00-14mdv2008.1
++ Revision: 144969
+- rebuild for new vdr
+- adapt for changed vdr optflags scheme
+
+  + Olivier Blin <oblin@mandriva.com>
+    - restore BuildRoot
+
+  + Thierry Vignaud <tv@mandriva.org>
+    - kill re-definition of %%buildroot on Pixel's request
+
+* Mon Oct 29 2007 Anssi Hannula <anssi@mandriva.org> 1.0.00-13mdv2008.1
++ Revision: 103055
+- rebuild for new vdr
+
+* Sun Jul 08 2007 Anssi Hannula <anssi@mandriva.org> 1.0.00-12mdv2008.0
++ Revision: 49964
+- rebuild for new vdr
+
+* Thu Jun 21 2007 Anssi Hannula <anssi@mandriva.org> 1.0.00-11mdv2008.0
++ Revision: 42051
+- rebuild for new vdr
+
+* Sat May 05 2007 Anssi Hannula <anssi@mandriva.org> 1.0.00-10mdv2008.0
++ Revision: 22693
+- rebuild for new vdr
+
+
+* Tue Dec 05 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-9mdv2007.0
++ Revision: 90886
+- rebuild for new vdr
+
+* Tue Oct 31 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-8mdv2007.1
++ Revision: 73939
+- rebuild for new vdr
+- Import vdr-plugin-analogtv
+
+* Thu Sep 07 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-7mdv2007.0
+- rebuild for new vdr
+
+* Fri Aug 25 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-6mdv2007.0
+- fix mangled description
+
+* Thu Aug 24 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-5mdv2007.0
+- stricter abi requires
+- compile with -fno-PIC, otherwise build fails
+
+* Mon Aug 07 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-4mdv2007.0
+- rebuild for new vdr
+
+* Wed Jul 26 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-3mdv2007.0
+- rebuild for new vdr
+
+* Tue Jun 20 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-2mdv2007.0
+- rebuild for new vdr
+
+* Tue Jun 13 2006 Anssi Hannula <anssi@mandriva.org> 1.0.00-1mdv2007.0
+- 1.0.00
+- fix URL
+- ship ChannelMap.h, don't ship patches
+- drop mp1e, it's in a separate package already
+- drop patches 1, 2, 3, fixed upstream
+- patch4: flood the syslog on debug levels 3+ only
+- fixes for better compatibility with Mandriva ffmpeg
+- replace 32001 with A0 in README
+- x86 only for now (fixing should be trivial, as no functions are asm-only)
+
+* Mon Jun 12 2006 Anssi Hannula <anssi@mandriva.org> 0.9.39-0.20060610.2mdv2007.0
+- buildrequires jpeg-devel
+
+* Sun Jun 11 2006 Anssi Hannula <anssi@mandriva.org> 0.9.39-0.20060610.1mdv2007.0
+- initial Mandriva release
+
