@@ -3,7 +3,7 @@
 Summary:	VDR plugin: Watch analogue TV
 Name:		vdr-plugin-%plugin
 Version:	1.0.00
-Release:	21
+Release:	22
 Group:		Video
 License:	GPL
 URL:		http://www.ko0l.de/download/vdr/analogtv/
@@ -21,7 +21,7 @@ Patch10:	analogtv-sane-c++.patch
 BuildRequires:	vdr-devel >= 1.6.0-7
 BuildRequires:	libdvb-devel
 BuildRequires:	libalsa-devel
-BuildRequires:	libjpeg-devel
+BuildRequires:	jpeg-devel
 Requires:	vdr-abi = %vdr_abi
 
 %description
