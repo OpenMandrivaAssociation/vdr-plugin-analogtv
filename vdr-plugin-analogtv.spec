@@ -1,13 +1,9 @@
-
 %define plugin	analogtv
-%define name	vdr-plugin-%plugin
-%define version	1.0.00
-%define rel	20
 
 Summary:	VDR plugin: Watch analogue TV
-Name:		%name
-Version:	%version
-Release:	%mkrel %rel
+Name:		vdr-plugin-%plugin
+Version:	1.0.00
+Release:	21
 Group:		Video
 License:	GPL
 URL:		http://www.ko0l.de/download/vdr/analogtv/
@@ -22,7 +18,6 @@ Patch6:		analogtv-threadsafety.patch
 Patch7:		analogtv-default-syslog.patch
 # from e-tobi:
 Patch10:	analogtv-sane-c++.patch
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0-7
 BuildRequires:	libdvb-devel
 BuildRequires:	libalsa-devel
@@ -70,17 +65,7 @@ VDR_PLUGIN_EXTRA_FLAGS="-fno-PIC"
 %vdr_plugin_build
 
 %install
-rm -rf %{buildroot}
 %vdr_plugin_install
-
-%clean
-rm -rf %{buildroot}
-
-%post
-%vdr_plugin_post %plugin
-
-%postun
-%vdr_plugin_postun %plugin
 
 %files -f %plugin.vdr
 %defattr(-,root,root)
