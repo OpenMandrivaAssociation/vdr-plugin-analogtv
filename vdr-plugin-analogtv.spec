@@ -41,7 +41,7 @@ supported software MPEG encoder (mp1e is recommended).
 
 %prep
 %setup -q -n %plugin-%version
-%apply_patches
+%autopatch -p1
 
 cp -a %SOURCE2 .
 
