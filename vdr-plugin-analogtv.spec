@@ -6,7 +6,7 @@ Version:	1.0.00
 Release:	24
 Group:		Video
 License:	GPL
-URL:		http://www.ko0l.de/download/vdr/analogtv/
+URL:		https://www.ko0l.de/download/vdr/analogtv/
 Source:		http://www.ko0l.de/download/vdr/analogtv/download/vdr-%plugin-%version.tar.bz2
 Source2:	channels.conf.analogue.generic
 Patch1:		analogtv-1.0.00-i18n-1.6.patch
